@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/view_base_top" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <SurfaceView
+            android:id="@+id/sv_preview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/iv_tip"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white"
+            android:padding="16dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icon_heart" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="256dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="208dp">
+
+            <org.njgroup.health.heart_rate.HeartRateChart
+                android:id="@+id/heart_rate_chart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/tv_tip"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="@string/user_tip"
+                android:textColor="@android:color/holo_red_light"
+                android:textSize="18sp" />
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/btn_action_start"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorPrimary"
+            android:text="开始"
+            android:textColor="@android:color/white" />
+    </RelativeLayout>
+</LinearLayout>
