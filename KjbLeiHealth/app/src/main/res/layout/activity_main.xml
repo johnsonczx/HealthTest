@@ -3,13 +3,84 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/homebgd"
-    android:gravity="center"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="170dip" >
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dip"
+            android:layout_gravity="bottom"
+            android:background="#F5F5F5"
+            android:gravity="center"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="图片标题"
+                android:textColor="#FF00FF"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dip"
+                android:orientation="horizontal" >
+
+                <View
+                    android:id="@+id/dot_0"
+                    android:layout_width="5dip"
+                    android:layout_height="5dip"
+                    android:layout_marginLeft="2dip"
+                    android:layout_marginRight="2dip"
+                    android:background="@drawable/dot_focused"/>
+
+                <View
+                    android:id="@+id/dot_1"
+                    android:layout_width="5dip"
+                    android:layout_height="5dip"
+                    android:layout_marginLeft="2dip"
+                    android:layout_marginRight="2dip"
+                    android:background="@drawable/dot_normal"/>
+                <View
+                    android:id="@+id/dot_2"
+                    android:layout_width="5dip"
+                    android:layout_height="5dip"
+                    android:layout_marginLeft="2dip"
+                    android:layout_marginRight="2dip"
+                    android:background="@drawable/dot_normal"/>
+                <View
+                    android:id="@+id/dot_3"
+                    android:layout_width="5dip"
+                    android:layout_height="5dip"
+                    android:layout_marginLeft="2dip"
+                    android:layout_marginRight="2dip"
+                    android:background="@drawable/dot_normal"/>
+
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+<LinearLayout
+    android:layout_marginTop="30dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    >
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
         android:clickable="true"
         android:onClick="onHeartRateClick">
 
@@ -18,7 +89,6 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_centerVertical="true"
-            android:layout_marginTop="20dp"
             android:background="@drawable/heart_rate"
             android:onClick="onHeartRateClick" />
 
@@ -27,17 +97,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="40dp"
             android:layout_toRightOf="@id/heartbtn"
             android:text="心率测试"
             android:textColor="@color/red"
             android:textSize="20sp" />
     </RelativeLayout>
-
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:clickable="true"
         android:onClick="onEarListenClick">
 
@@ -46,7 +115,6 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_centerVertical="true"
-            android:layout_marginTop="20dp"
             android:background="@drawable/hearing"
             android:onClick="onEarListenClick" />
 
@@ -56,7 +124,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="40dp"
             android:layout_toRightOf="@id/hearingbtn"
             android:text="听力测试"
             android:textColor="@color/blue"
@@ -66,7 +134,7 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:clickable="true"
         android:onClick="onBreathSpeedClick">
 
@@ -75,7 +143,6 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_centerVertical="true"
-            android:layout_marginTop="20dp"
             android:background="@drawable/breathe"
             android:onClick="onBreathSpeedClick" />
 
@@ -85,11 +152,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="40dp"
             android:layout_toRightOf="@id/breathebtn"
             android:text="呼吸频率"
             android:textColor="@color/green"
             android:textSize="20sp" />
     </RelativeLayout>
-
+</LinearLayout>
 </LinearLayout>

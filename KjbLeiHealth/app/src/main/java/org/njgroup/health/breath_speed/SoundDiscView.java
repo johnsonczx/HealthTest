@@ -77,7 +77,8 @@ public class SoundDiscView extends ImageView {
     }
 
     private float getAngle(float db) {
-        return (db - 85) * 5 / 3;  //说多了都是泪，网上找的图片。。自己不会改图，代码计算下
+        return (db - 85) * 5 / 3;
+
     }
 
 }

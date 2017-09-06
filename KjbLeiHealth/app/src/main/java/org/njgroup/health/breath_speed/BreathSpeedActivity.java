@@ -2,7 +2,6 @@ package org.njgroup.health.breath_speed;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,24 +17,19 @@ import java.io.File;
 /**
  * @author WangLiMei
  */
-public class BreathSpeedActivity extends BaseActivity {
+public class BreathSpeedActivity extends BaseActivity implements View.OnClickListener{
     TextView recordTV;
     Button mBlowBtn;
-    private static final int TEST_START = 0;
-    private static final int TESTING = 1;
-    private static final int TESTEND = 2;
     private static int utilEnd = 20;
-    private boolean isPause;
-    private boolean isTesting;
-    private boolean isBegin;
     float volume = 10000;
     private SoundDiscView soundDiscView;
     private BreathRecoder mRecorder;
     private static final int msgWhat = 0x1001;
     private static int count = 0;
     private static int[] sampleValue = new int[200];
-    private static int frequency = 0;
+    private int frequency = 0;
     private static int sum = 0;
+    private Handler handler1 = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,58 +39,12 @@ public class BreathSpeedActivity extends BaseActivity {
         mRecorder = new BreathRecoder();
         recordTV = (TextView) findViewById(R.id.recordTV);
         mBlowBtn = (Button) findViewById(R.id.mBlowBtn);
-        mBlowBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                utilEnd = 20;
-                frequency = 0;
-                count = 0;
-                sum = 0;
-                isBegin = true;
-                mBlowBtn.setEnabled(false);
-                mBlowBtn.setText("测量中");
-                recordTV.setText("倒计时" + utilEnd + "秒");
-                handler.sendEmptyMessage(TEST_START);
-            }
-        });
+        mBlowBtn.setOnClickListener(this);
         //安卓新版本中，敏感权限必须动态申请，此处进行权限申请
         PermitTool.verifyRecord(this);
         PermitTool.verifySdcard(this);
     }
 
-    private Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what) {
-                case TEST_START:
-                    if (isBegin) {
-                        if (!isTesting) {
-                            isTesting = true;
-                            new Thread(new stopRun()).start();
-                            new Thread(new blowRun()).start();
-                        }
-                    }
-                    break;
-                case TESTING:
-                    recordTV.setText("倒计时" + utilEnd + "秒");
-                    soundDiscView.refresh();
-                    break;
-                case TESTEND:
-                    int avg = sum / 200;
-                    for (int i = 1; i < 199; i++) {
-                        if (sampleValue[i] > avg && sampleValue[i] > sampleValue[i - 1] && sampleValue[i] > sampleValue[i + 1])
-                            frequency++;
-
-                    }
-                    recordTV.setText("您的呼吸频率为" + frequency * 3 + "次每分钟");
-                    mBlowBtn.setText("测试完成");
-                    // mBlowBtn.setEnabled(true);
-                    break;
-
-            }
-            return false;
-        }
-    });
 
     /**
      * 开始记录
@@ -107,7 +55,8 @@ public class BreathSpeedActivity extends BaseActivity {
         try {
             mRecorder.setMyRecAudioFile(fFile);
             if (mRecorder.startRecorder()) {
-
+                World.setDbCount(30);
+                soundDiscView.refresh();
             } else {
                 Toast.makeText(this, "启动录音失败", Toast.LENGTH_SHORT).show();
             }
@@ -120,7 +69,6 @@ public class BreathSpeedActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        isPause = false;
         soundDiscView = (SoundDiscView) findViewById(R.id.soundDiscView);
         File file = FileUtil.createFile("temp.amr");
         if (file != null) {
@@ -137,14 +85,15 @@ public class BreathSpeedActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        isPause = true;
+        World.setDbCount(30);
+        soundDiscView.refresh();
+        handler1.removeCallbacks(blowThread);
         mRecorder.delete();
 
     }
 
     @Override
     protected void onDestroy() {
-        handler.removeMessages(msgWhat);
         mRecorder.delete();
         super.onDestroy();
     }
@@ -152,43 +101,40 @@ public class BreathSpeedActivity extends BaseActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        isPause = false;
-        onResume();
+      //  onResume();
+        World.setDbCount(30);
+        soundDiscView.refresh();
     }
 
-    class stopRun implements Runnable {
-        @Override
-        public void run() {
-            while (!isPause) {
-                try {
-                    Thread.sleep(1000);
-                    utilEnd--;
-                    //      handler.sendEmptyMessage(TESTING);
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                if (utilEnd == 0) {
-                    isBegin = false;
-                    isTesting = false;
-                    // mRecorder.stopRecording();
-                    handler.sendEmptyMessage(TESTEND);
-                }
-
-            }
+    @Override
+    public void onClick(View v) {
+        utilEnd = 20;
+        frequency = 0;
+        count = 0;
+        sum = 0;
+        for (int i:sampleValue)
+        {
+            i = 0;
         }
+        mBlowBtn.setEnabled(false);
+        mBlowBtn.setText("测量中");
+        handler1.post(blowThread);
     }
 
-    class blowRun implements Runnable {
+
+
+     Runnable blowThread = new Runnable(){
         @Override
-        public void run() {
-            while (!isPause && isTesting) {
+        public void run()
+        {
+
                 volume = mRecorder.getMaxAmplitude();  //获取声压值
-                if (volume > 0 && volume < 1000000) {
+                if (volume > 0 && volume < 1000000)
+                {
                     World.setDbCount(20 * (float) (Math.log10(volume)));  //将声压值转为分贝值
                     int temp = (int) World.dbCount;
-                    if (count < 200) {
+                    if (count < 200)
+                    {
                         sampleValue[count] = temp;
                         sum = sum + temp;
                     }
@@ -207,12 +153,29 @@ public class BreathSpeedActivity extends BaseActivity {
                     e.printStackTrace();
                 }
 
-                handler.sendEmptyMessage(TESTING);
+                soundDiscView.refresh();
+
+            if(count == 200){
+                int avg = sum / 200;
+                for (int i = 1; i < 199; i++) {
+                    if (sampleValue[i] > avg && sampleValue[i] >= sampleValue[i - 1] && sampleValue[i] > sampleValue[i + 1])
+                        frequency++;
+
+                }
+                recordTV.setText("您的呼吸频率为" + frequency * 3 + "次每分钟");
+                mBlowBtn.setText("开始");
+                mBlowBtn.setEnabled(true);
+                handler1.removeCallbacks(blowThread);
+            }else {
+                if (count % 10 == 0 && utilEnd != 1) {
+                    utilEnd--;
+                    recordTV.setText("倒计时" + utilEnd + "秒");
+                }
+
+                handler1.post(blowThread);
             }
-            if (!isTesting) {
-                handler.sendEmptyMessage(TESTEND);
-            }
+
         }
-    }
+    };
 
 }
